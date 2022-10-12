@@ -1,5 +1,6 @@
 import { stripHtml } from "string-strip-html";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import connection from "../database/database.js";
 
 async function createUser(req, res) {
@@ -30,4 +31,24 @@ async function createUser(req, res) {
   }
 }
 
-export { createUser };
+async function logUserIn(req, res) {
+  const { email, password } = req.body;
+  try {
+    const user = (
+      await connection.query(`SELECT * FROM users WHERE email = $1`, [email])
+    ).rows[0];
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(401).send({
+        error: `The password does not match the email.
+Check your inputs and try again or create a new account.`,
+      });
+    }
+    const config = { expiresIn: process.env.JWT_EXPIRES_IN };
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, config);
+    res.status(200).send(token);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export { createUser, logUserIn };
