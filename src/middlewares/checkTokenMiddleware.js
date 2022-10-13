@@ -11,7 +11,7 @@ async function checkToken(req, res, next) {
   }
   try {
     const user = (
-      await connection.query(`SELECT * FROM users WHERE id = $1`, [userId])
+      await connection.query(`SELECT * FROM users WHERE id = $1;`, [userId])
     ).rows[0];
     if (!user) {
       return res.status(404).send({ error: "User not found" });

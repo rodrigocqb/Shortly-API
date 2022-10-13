@@ -14,7 +14,7 @@ async function createUser(req, res) {
   password = bcrypt.hashSync(password, 10);
   try {
     const user = (
-      await connection.query(`SELECT * FROM users WHERE email = $1`, [email])
+      await connection.query(`SELECT * FROM users WHERE email = $1;`, [email])
     ).rows[0];
     if (user) {
       return res
@@ -22,7 +22,7 @@ async function createUser(req, res) {
         .send({ error: "An user with this email is already registered" });
     }
     await connection.query(
-      `INSERT INTO users (name, email, password) VALUES ($1, $2, $3)`,
+      `INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`,
       [name, email, password]
     );
     res.sendStatus(201);
@@ -35,7 +35,7 @@ async function logUserIn(req, res) {
   const { email, password } = req.body;
   try {
     const user = (
-      await connection.query(`SELECT * FROM users WHERE email = $1`, [email])
+      await connection.query(`SELECT * FROM users WHERE email = $1;`, [email])
     ).rows[0];
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(401).send({

@@ -14,7 +14,7 @@ async function shortenUrl(req, res) {
   try {
     await connection.query(
       `INSERT INTO urls ("userId", "shortUrl", url) 
-        VALUES ($1, $2, $3)`,
+        VALUES ($1, $2, $3);`,
       [user.id, shortUrl, url]
     );
     res.status(201).send({ shortUrl });
@@ -34,14 +34,14 @@ async function openUrl(req, res) {
   const { shortUrl } = req.params;
   try {
     const url = (
-      await connection.query(`SELECT * FROM urls WHERE "shortUrl" = $1`, [
+      await connection.query(`SELECT * FROM urls WHERE "shortUrl" = $1;`, [
         shortUrl,
       ])
     ).rows[0];
     if (!url) {
       return res.status(404).send({ error: "URL not found" });
     }
-    await connection.query(`INSERT INTO visits ("urlId") VALUES ($1)`, [
+    await connection.query(`INSERT INTO visits ("urlId") VALUES ($1);`, [
       url.id,
     ]);
     return res.redirect(url.url);
@@ -56,8 +56,8 @@ async function deleteUrl(req, res) {
     return res.status(401).send({ error: "This URL is from another user" });
   }
   try {
-    await connection.query(`DELETE FROM visits WHERE "urlId" = $1`, [url.id]);
-    await connection.query(`DELETE FROM urls WHERE id = $1`, [url.id]);
+    await connection.query(`DELETE FROM visits WHERE "urlId" = $1;`, [url.id]);
+    await connection.query(`DELETE FROM urls WHERE id = $1;`, [url.id]);
     res.sendStatus(204);
   } catch (error) {
     res.status(500).send(error.message);
