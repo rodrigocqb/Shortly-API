@@ -23,4 +23,9 @@ async function shortenUrl(req, res) {
   }
 }
 
-export { shortenUrl };
+function getUrl(req, res) {
+  const { url } = res.locals;
+  res.status(200).send(url);
+}
+
+export { shortenUrl, getUrl };
