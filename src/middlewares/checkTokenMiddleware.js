@@ -13,10 +13,10 @@ async function checkToken(req, res, next) {
     const user = (
       await connection.query(`SELECT * FROM users WHERE id = $1`, [userId])
     ).rows[0];
-    delete user.password;
     if (!user) {
-      return res.status(401).send({ error: "User not authorized" });
+      return res.status(404).send({ error: "User not found" });
     }
+    delete user.password;
     res.locals.user = user;
     next();
   } catch (error) {
