@@ -21,7 +21,7 @@ async function createUser(req, res) {
         .status(409)
         .send({ error: "An user with this email is already registered" });
     }
-    connection.query(
+    await connection.query(
       `INSERT INTO users (name, email, password) VALUES ($1, $2, $3)`,
       [name, email, password]
     );
