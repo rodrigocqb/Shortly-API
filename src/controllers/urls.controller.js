@@ -25,6 +25,8 @@ async function shortenUrl(req, res) {
 
 function getUrl(req, res) {
   const { url } = res.locals;
+  delete url.createdAt;
+  delete url.userId;
   res.status(200).send(url);
 }
 
@@ -48,4 +50,18 @@ async function openUrl(req, res) {
   }
 }
 
-export { shortenUrl, getUrl, openUrl };
+async function deleteUrl(req, res) {
+  const { url, user } = res.locals;
+  if (url.userId !== user.id) {
+    return res.status(401).send({ error: "This URL is from another user" });
+  }
+  try {
+    await connection.query(`DELETE FROM visits WHERE "urlId" = $1`, [url.id]);
+    await connection.query(`DELETE FROM urls WHERE id = $1`, [url.id]);
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export { shortenUrl, getUrl, openUrl, deleteUrl };
