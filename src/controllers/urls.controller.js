@@ -27,6 +27,7 @@ function getUrl(req, res) {
   const { url } = res.locals;
   delete url.createdAt;
   delete url.userId;
+  delete url.visitCount;
   res.status(200).send(url);
 }
 
@@ -41,9 +42,11 @@ async function openUrl(req, res) {
     if (!url) {
       return res.status(404).send({ error: "URL not found" });
     }
-    await connection.query(`INSERT INTO visits ("urlId") VALUES ($1);`, [
-      url.id,
-    ]);
+    await connection.query(
+      `UPDATE urls SET "visitCount" = "visitCount" + 1 
+    WHERE id = $1;`,
+      [url.id]
+    );
     return res.redirect(url.url);
   } catch (error) {
     res.status(500).send(error.message);
@@ -56,7 +59,6 @@ async function deleteUrl(req, res) {
     return res.status(401).send({ error: "This URL is from another user" });
   }
   try {
-    await connection.query(`DELETE FROM visits WHERE "urlId" = $1;`, [url.id]);
     await connection.query(`DELETE FROM urls WHERE id = $1;`, [url.id]);
     res.sendStatus(204);
   } catch (error) {

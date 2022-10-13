@@ -6,23 +6,20 @@ async function getUser(req, res) {
     const userData = (
       await connection.query(
         `SELECT users.id, users.name, 
-        COALESCE(SUM(COALESCE(
-            (SELECT COUNT(visits.id) FROM visits 
-            WHERE visits."urlId" = urls.id ),0)), 0) AS "visitCount"
-            FROM users JOIN urls ON users.id = urls."userId"
-            JOIN visits ON urls.id = visits."urlId"
-            WHERE users.id = $1
-            GROUP BY users.id;`,
+        COALESCE(SUM(urls."visitCount"), 0) AS "visitCount"
+        FROM users JOIN urls on users.id = urls."userId" 
+        WHERE users.id = $1
+        GROUP BY users.id;`,
         [user.id]
       )
     ).rows[0];
     const userUrls = (
-      await connection.query(`SELECT urls.id, urls."shortUrl", urls.url, 
-    COALESCE((SELECT COUNT(visits.id) 
-    FROM visits WHERE visits."urlId" = urls.id), 0) AS "visitCount"
-    FROM urls JOIN users ON users.id = urls."userId"
-    WHERE users.id = 1
-    GROUP BY urls.id;`)
+      await connection.query(
+        `SELECT urls.id, urls."shortUrl", urls.url, urls."visitCount" FROM urls
+      JOIN users on urls."userId" = users.id
+      WHERE users.id = $1;`,
+        [user.id]
+      )
     ).rows;
     userData.shortenedUrls = userUrls;
     res.status(200).send(userData);
