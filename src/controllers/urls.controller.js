@@ -28,4 +28,24 @@ function getUrl(req, res) {
   res.status(200).send(url);
 }
 
-export { shortenUrl, getUrl };
+async function openUrl(req, res) {
+  const { shortUrl } = req.params;
+  try {
+    const url = (
+      await connection.query(`SELECT * FROM urls WHERE "shortUrl" = $1`, [
+        shortUrl,
+      ])
+    ).rows[0];
+    if (!url) {
+      return res.status(404).send({ error: "URL not found" });
+    }
+    await connection.query(`INSERT INTO visits ("urlId") VALUES ($1)`, [
+      url.id,
+    ]);
+    return res.redirect(url.url);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export { shortenUrl, getUrl, openUrl };
