@@ -21,6 +21,39 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sessions (
+    id integer NOT NULL,
+    token text NOT NULL,
+    "userId" integer NOT NULL,
+    valid boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sessions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
+
+
+--
 -- Name: urls; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -118,6 +151,13 @@ ALTER SEQUENCE public.visits_id_seq OWNED BY public.visits.id;
 
 
 --
+-- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
+
+
+--
 -- Name: urls id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -139,12 +179,22 @@ ALTER TABLE ONLY public.visits ALTER COLUMN id SET DEFAULT nextval('public.visit
 
 
 --
+-- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public.sessions VALUES (2, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY2NTc2NTM3MiwiZXhwIjoxNjY1ODUxNzcyfQ.0yzyUdvJLByWQ2stsQgCNcevmExVvIALblFdkUIfUzA', 1, true, '2022-10-14 13:36:12.746772');
+INSERT INTO public.sessions VALUES (6, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY2NTc2NzczNSwiZXhwIjoxNjY1ODU0MTM1fQ.cfNL7SHcRS5GDBm6UPJPFsBTQBm4rVD0B-h-iptIW5s', 1, true, '2022-10-14 14:15:35.783378');
+INSERT INTO public.sessions VALUES (7, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY2NTc2Nzc3NSwiZXhwIjoxNjY1ODU0MTc1fQ.oXM44htq_irA06BFpqZYRlIboyZj71v6Ig0eBFxRAbQ', 2, true, '2022-10-14 14:16:15.873112');
+
+
+--
 -- Data for Name: urls; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 INSERT INTO public.urls VALUES (6, 1, 'KvfsCp2V', 'https://ge.globo.com/sp/futebol/copa-do-brasil/jogo/12-10-2022/corinthians-flamengo.ghtml', '2022-10-12 22:12:16.533822');
 INSERT INTO public.urls VALUES (7, 1, 'A-NONkly', 'https://ge.globo.com/sp/futebol/copa-do-brasil/jogo/12-10-2022/corinthians-flamengo.ghtml', '2022-10-13 00:34:09.726968');
 INSERT INTO public.urls VALUES (10, 2, 'rQjMXkxJ', 'https://www.facebook.com', '2022-10-13 20:47:04.01804');
+INSERT INTO public.urls VALUES (11, 2, 'c0rvbBFj', 'https://www.facebook.com', '2022-10-14 14:16:42.520656');
 
 
 --
@@ -166,10 +216,17 @@ INSERT INTO public.visits VALUES (5, 6, '2022-10-13 20:44:20.742702');
 
 
 --
+-- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.sessions_id_seq', 7, true);
+
+
+--
 -- Name: urls_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.urls_id_seq', 10, true);
+SELECT pg_catalog.setval('public.urls_id_seq', 11, true);
 
 
 --
@@ -184,6 +241,22 @@ SELECT pg_catalog.setval('public.users_id_seq', 2, true);
 --
 
 SELECT pg_catalog.setval('public.visits_id_seq', 6, true);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sessions sessions_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_token_key UNIQUE (token);
 
 
 --
@@ -224,6 +297,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.visits
     ADD CONSTRAINT visits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sessions sessions_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
 
 
 --
