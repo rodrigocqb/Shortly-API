@@ -44,7 +44,11 @@ Check your inputs and try again or create a new account.`,
       });
     }
     const config = { expiresIn: process.env.JWT_EXPIRES_IN };
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, config);
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.TOKEN_SECRET,
+      config
+    );
     res.status(200).send(token);
   } catch (error) {
     res.status(500).send(error.message);
