@@ -49,6 +49,10 @@ Check your inputs and try again or create a new account.`,
       process.env.TOKEN_SECRET,
       config
     );
+    await connection.query(
+      `INSERT INTO sessions (token, "userId") VALUES ($1, $2);`,
+      [token, user.id]
+    );
     res.status(200).send(token);
   } catch (error) {
     res.status(500).send(error.message);
