@@ -17,9 +17,9 @@ async function shortenUrl(req, res) {
         VALUES ($1, $2, $3);`,
       [user.id, shortUrl, url]
     );
-    res.status(201).send({ shortUrl });
+    return res.status(201).send({ shortUrl });
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 
@@ -27,7 +27,7 @@ function getUrl(req, res) {
   const { url } = res.locals;
   delete url.createdAt;
   delete url.userId;
-  res.status(200).send(url);
+  return res.status(200).send(url);
 }
 
 async function openUrl(req, res) {
@@ -46,7 +46,7 @@ async function openUrl(req, res) {
     ]);
     return res.redirect(url.url);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 
@@ -58,9 +58,9 @@ async function deleteUrl(req, res) {
   try {
     await connection.query(`DELETE FROM visits WHERE "urlId" = $1`, [url.id]);
     await connection.query(`DELETE FROM urls WHERE id = $1;`, [url.id]);
-    res.sendStatus(204);
+    return res.sendStatus(204);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 

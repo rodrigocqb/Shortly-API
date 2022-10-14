@@ -5,7 +5,7 @@ function validateSchema(schema) {
       const errors = validation.error.details.map((err) => err.message);
       return res.status(422).send(errors);
     }
-    next();
+    return next();
   };
 }
 

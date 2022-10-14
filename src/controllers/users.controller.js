@@ -26,9 +26,9 @@ async function getUser(req, res) {
       )
     ).rows;
     userData.shortenedUrls = userUrls;
-    res.status(200).send(userData);
+    return res.status(200).send(userData);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 
@@ -43,9 +43,9 @@ async function getRanking(req, res) {
       urls.id = visits."urlId" GROUP BY users.id
       ORDER BY "visitCount" DESC LIMIT 10;`)
     ).rows;
-    res.status(200).send(users);
+    return res.status(200).send(users);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 

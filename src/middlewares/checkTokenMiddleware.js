@@ -32,9 +32,9 @@ async function checkToken(req, res, next) {
     if (!isTokenValid) {
       return res.status(401).send({ error: "User not authorized" });
     }
-    next();
+    return next();
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 

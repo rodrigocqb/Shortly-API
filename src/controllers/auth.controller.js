@@ -25,9 +25,9 @@ async function createUser(req, res) {
       `INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`,
       [name, email, password]
     );
-    res.sendStatus(201);
+    return res.sendStatus(201);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 
@@ -53,9 +53,9 @@ Check your inputs and try again or create a new account.`,
       `INSERT INTO sessions (token, "userId") VALUES ($1, $2);`,
       [token, user.id]
     );
-    res.status(200).send(token);
+    return res.status(200).send(token);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 

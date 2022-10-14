@@ -10,9 +10,9 @@ async function urlExists(req, res, next) {
       return res.status(404).send({ error: "URL not found" });
     }
     res.locals.url = url;
-    next();
+    return next();
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 }
 
