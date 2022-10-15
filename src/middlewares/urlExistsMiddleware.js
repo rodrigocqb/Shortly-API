@@ -2,14 +2,12 @@ import {
   notFoundResponse,
   serverError,
 } from "../controllers/controllers.helper.js";
-import connection from "../database/database.js";
+import * as urlsRepository from "../repositories/urls.repository.js";
 
 async function urlExists(req, res, next) {
   const { id } = req.params;
   try {
-    const url = (
-      await connection.query(`SELECT * FROM urls WHERE id = $1;`, [id])
-    ).rows[0];
+    const url = await urlsRepository.selectUrlById(id);
     if (!url) {
       return notFoundResponse(res, { error: "URL not found" });
     }
