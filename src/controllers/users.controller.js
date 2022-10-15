@@ -1,4 +1,5 @@
 import connection from "../database/database.js";
+import { okResponse, serverError } from "./controllers.helper.js";
 
 async function getUser(req, res) {
   const { user } = res.locals;
@@ -26,9 +27,9 @@ async function getUser(req, res) {
       )
     ).rows;
     userData.shortenedUrls = userUrls;
-    return res.status(200).send(userData);
+    return okResponse(res, userData);
   } catch (error) {
-    return res.status(500).send(error.message);
+    return serverError(res, error);
   }
 }
 
@@ -43,9 +44,9 @@ async function getRanking(req, res) {
       urls.id = visits."urlId" GROUP BY users.id
       ORDER BY "visitCount" DESC LIMIT 10;`)
     ).rows;
-    return res.status(200).send(users);
+    return okResponse(res, users);
   } catch (error) {
-    return res.status(500).send(error.message);
+    return serverError(res, error);
   }
 }
 

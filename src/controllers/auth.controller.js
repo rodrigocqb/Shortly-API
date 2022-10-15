@@ -2,6 +2,14 @@ import { stripHtml } from "string-strip-html";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import connection from "../database/database.js";
+import {
+  conflictResponse,
+  createdResponse,
+  okResponse,
+  serverError,
+  unauthorizedResponse,
+  unprocessableResponse,
+} from "./controllers.helper.js";
 
 async function createUser(req, res) {
   const { confirmPassword } = req.body;
@@ -9,7 +17,7 @@ async function createUser(req, res) {
   name = stripHtml(name).result.trim();
   email = stripHtml(email).result.trim();
   if (password !== confirmPassword) {
-    return res.status(422).send({ error: "Passwords do not match" });
+    return unprocessableResponse(res, { error: "Passwords do not match" });
   }
   password = bcrypt.hashSync(password, 10);
   try {
@@ -17,17 +25,17 @@ async function createUser(req, res) {
       await connection.query(`SELECT * FROM users WHERE email = $1;`, [email])
     ).rows[0];
     if (user) {
-      return res
-        .status(409)
-        .send({ error: "An user with this email is already registered" });
+      return conflictResponse(res, {
+        error: "An user with this email is already registered",
+      });
     }
     await connection.query(
       `INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`,
       [name, email, password]
     );
-    return res.sendStatus(201);
+    return createdResponse(res);
   } catch (error) {
-    return res.status(500).send(error.message);
+    return serverError(res, error);
   }
 }
 
@@ -38,7 +46,7 @@ async function logUserIn(req, res) {
       await connection.query(`SELECT * FROM users WHERE email = $1;`, [email])
     ).rows[0];
     if (!user || !bcrypt.compareSync(password, user.password)) {
-      return res.status(401).send({
+      return unauthorizedResponse(res, {
         error: `The password does not match the email.
 Check your inputs and try again or create a new account.`,
       });
@@ -53,9 +61,9 @@ Check your inputs and try again or create a new account.`,
       `INSERT INTO sessions (token, "userId") VALUES ($1, $2);`,
       [token, user.id]
     );
-    return res.status(200).send(token);
+    return okResponse(res, token);
   } catch (error) {
-    return res.status(500).send(error.message);
+    return serverError(res, error);
   }
 }
 

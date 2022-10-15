@@ -1,4 +1,9 @@
 import jwt from "jsonwebtoken";
+import {
+  notFoundResponse,
+  serverError,
+  unauthorizedResponse,
+} from "../controllers/controllers.helper.js";
 import connection from "../database/database.js";
 
 async function checkToken(req, res, next) {
@@ -8,7 +13,7 @@ async function checkToken(req, res, next) {
     userId = jwt.verify(token, process.env.TOKEN_SECRET).userId;
   } catch (error) {
     connection.query(`DELETE FROM sessions WHERE token = $1;`, [token]);
-    return res.status(401).send({ error: "User not authorized" });
+    return unauthorizedResponse(res, { error: "User not authorized" });
   }
   try {
     const user = (
@@ -16,9 +21,9 @@ async function checkToken(req, res, next) {
     ).rows[0];
     if (!user) {
       if (req.path === "/users/me") {
-        return res.status(404).send({ error: "User not found" });
+        return notFoundResponse(res, { error: "User not found" });
       }
-      return res.status(401).send({ error: "User not authorized" });
+      return unauthorizedResponse(res, { error: "User not authorized" });
     }
     delete user.password;
     res.locals.user = user;
@@ -30,11 +35,11 @@ async function checkToken(req, res, next) {
       )
     ).rows[0];
     if (!isTokenValid) {
-      return res.status(401).send({ error: "User not authorized" });
+      return unauthorizedResponse(res, { error: "User not authorized" });
     }
     return next();
   } catch (error) {
-    return res.status(500).send(error.message);
+    return serverError(res, error);
   }
 }
 
