@@ -44,7 +44,7 @@ async function logUserIn(req, res) {
 Check your inputs and try again or create a new account.`,
       });
     }
-    const config = { expiresIn: process.env.JWT_EXPIRES_IN };
+    const config = { expiresIn: "1d" };
     const token = jwt.sign(
       { userId: user.id },
       process.env.TOKEN_SECRET,
