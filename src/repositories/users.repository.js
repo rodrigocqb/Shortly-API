@@ -35,7 +35,7 @@ async function selectUserUrls(userId) {
 async function selectRanking() {
   const users = (
     await connection.query(`SELECT ${TABLE}.id, ${TABLE}.name, 
-        COUNT(DISTINCT urls.id) AS "linkCount", 
+        COUNT(DISTINCT urls.id) AS "linksCount", 
         COUNT(visits.id) AS "visitCount"
         FROM ${TABLE} LEFT JOIN urls ON
         ${TABLE}.id = urls."userId" LEFT JOIN visits ON
