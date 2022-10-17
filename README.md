@@ -1,6 +1,8 @@
 # Shortly
 This is a web application where you can shorten internet links, built with NodeJS, Express and PostgreSQL. You can try the back-end here: https://shortly-back-api.herokuapp.com/
 
+[Shortly.webm](https://user-images.githubusercontent.com/106849571/196081175-743453ab-b907-4272-9776-121444dccc40.webm)
+
 ## About
 This is the back end for Shortly, a url shortener. Below are the implemented features:
 
