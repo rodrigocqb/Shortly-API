@@ -30,12 +30,14 @@ The following tools and frameworks were used in the construction of this project
 mkdir Shortly
 ```
 2. Clone this repository
-3. Install dependencies
+3. Clone the front end repository at: https://github.com/rodrigocqb/Shortly-Front
+4. Install dependencies
 ```bash
 npm i
 ```
-4. Create .env based on .env.example
-5. Run the project
+5. Create .env based on .env.example
+6. Run the project
 ```bash
 npm start
 ```
+7. Follow the instructions to run the front end at: https://github.com/rodrigocqb/Shortly-Front
